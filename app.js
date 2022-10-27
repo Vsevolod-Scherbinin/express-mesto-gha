@@ -20,6 +20,11 @@ app.use(express.json());
 app.use(routesUsers);
 app.use(routesCards);
 
+app.use((req, res) => {
+  res.status(404).send({ message: 'Некорректный путь запроса' });
+  return;
+});
+
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
