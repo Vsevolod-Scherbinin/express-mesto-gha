@@ -28,8 +28,21 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id).orFail(new Error ('NotFound'))
-    .then(card => res.send({ data: card }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+  .then(card => res.send({ data: card }))
+  .catch((err) => {
+    if(err.name === 'CastError') {
+      res.status(400).send({message: "Некорректные данные"});
+      return;
+    }
+
+    if(err.message === 'NotFound') {
+      res.status(404).send({message: "Запрашиваемая карточка не найдена"});
+      return;
+    }
+
+    res.status(500).send({ message: `Произошла неизвестная ошибка ${err.name}: ${err.message}`})
+    return;
+  });
 }
 
 module.exports.likeCard = (req, res) => {
