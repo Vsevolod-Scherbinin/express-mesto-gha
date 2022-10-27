@@ -1,30 +1,31 @@
 const User = require('../models/user');
 const mongoose = require('mongoose');
+const { NotFound, CastError } = require('../constants/constants');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then(users => res.send({ data: users }))
     .catch((err) => {
-      res.status(500).send({ message: `Произошла неизвестная ошибка ${err.name}: ${err.message}`})
+      res.status(500).send({ message: "Произошла неизвестная ошибка"})
       return;
     });
 }
 
 module.exports.getUserById = (req, res) => {
-  User.findById(req.params.userId).orFail(new Error ('NotFound'))
+  User.findById(req.params.userId).orFail(new Error (NotFound))
     .then(user => res.send({ data: user }))
     .catch((err) => {
-      if(err.name === 'CastError') {
+      if(err.name === CastError) {
         res.status(400).send({message: "Некорректные данные"});
         return;
       }
 
-      if(err.message === 'NotFound') {
+      if(err.message === NotFound) {
         res.status(404).send({message: "Запрашиваемый пользователь не найден"});
         return;
       }
 
-      res.status(500).send({ message: `Произошла неизвестная ошибка ${err.name}: ${err.message}`})
+      res.status(500).send({ message: "Произошла неизвестная ошибка"})
       return;
     });
 }
@@ -40,7 +41,7 @@ module.exports.createUser = (req, res) => {
         return;
       }
 
-      res.status(500).send({ message: `Произошла неизвестная ошибка ${err.name}: ${err.message}`})
+      res.status(500).send({ message: "Произошла неизвестная ошибка"})
       return;
     });
 }
@@ -50,9 +51,8 @@ module.exports.editUser = (req, res) => {
 
   User.findByIdAndUpdate(req.user._id, { name: name, about: about }, {
     new: true,
-    runValidators: true,
-    upsert: true
-  }).orFail(new Error ('NotFound'))
+    runValidators: true
+  }).orFail(new Error (NotFound))
     .then(user => res.send({ data: user }))
     .catch((err) => {
       if(err instanceof mongoose.Error.ValidationError) {
@@ -60,12 +60,12 @@ module.exports.editUser = (req, res) => {
         return;
       }
 
-      if(err.message === 'NotFound') {
+      if(err.message === NotFound) {
         res.status(404).send({message: "Запрашиваемый пользователь не найден"});
         return;
       }
 
-      res.status(500).send({ message: `Произошла неизвестная ошибка ${err.name}: ${err.message}`})
+      res.status(500).send({ message: "Произошла неизвестная ошибка"})
       return;
     });
 }
@@ -75,9 +75,8 @@ module.exports.editAvatar = (req, res) => {
 
   User.findByIdAndUpdate(req.user._id, { avatar: avatar }, {
     new: true,
-    runValidators: true,
-    upsert: true
-  }).orFail(new Error ('NotFound'))
+    runValidators: true
+  }).orFail(new Error (NotFound))
     .then(user => res.send({ data: user }))
     .catch((err) => {
       if(err instanceof mongoose.Error.ValidationError) {
@@ -85,12 +84,12 @@ module.exports.editAvatar = (req, res) => {
         return;
       }
 
-      if(err.message === 'NotFound') {
+      if(err.message === NotFound) {
         res.status(404).send({message: "Запрашиваемый пользователь не найден"});
         return;
       }
 
-      res.status(500).send({ message: `Произошла неизвестная ошибка ${err.name}: ${err.message}`})
+      res.status(500).send({ message: "Произошла неизвестная ошибка"})
       return;
     });
 }
