@@ -26,7 +26,7 @@ module.exports.createCard = (req, res) => {
 }
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id).orFail(new Error ('NorFound'))
+  Card.findByIdAndRemove(req.params.id).orFail(new Error ('NotFound'))
     .then(card => res.send({ data: card }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 }

@@ -11,10 +11,10 @@ module.exports.getUsers = (req, res) => {
 }
 
 module.exports.getUserById = (req, res) => {
-  User.findById(req.params.userId).orFail(new Error ('NorFound'))
+  User.findById(req.params.userId).orFail(new Error ('NotFound'))
     .then(user => res.send({ data: user }))
     .catch((err) => {
-      if(err instanceof mongoose.Error.CastError) {
+      if(err.name === 'CastError') {
         res.status(400).send({message: "Некорректные данные"});
         return;
       }
@@ -52,7 +52,7 @@ module.exports.editUser = (req, res) => {
     new: true,
     runValidators: true,
     upsert: true
-  }).orFail(new Error ('NorFound'))
+  }).orFail(new Error ('NotFound'))
     .then(user => res.send({ data: user }))
     .catch((err) => {
       if(err instanceof mongoose.Error.ValidationError) {
@@ -77,7 +77,7 @@ module.exports.editAvatar = (req, res) => {
     new: true,
     runValidators: true,
     upsert: true
-  }).orFail(new Error ('NorFound'))
+  }).orFail(new Error ('NotFound'))
     .then(user => res.send({ data: user }))
     .catch((err) => {
       if(err instanceof mongoose.Error.ValidationError) {
