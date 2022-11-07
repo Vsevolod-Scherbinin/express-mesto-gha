@@ -1,9 +1,8 @@
 const NotFound = 'NotFound';
 const CastError = 'CastError';
-const Error400 = 400;
-const Error404 = 404;
-const Error500 = 500;
+const JWT_SECRET = 'c6c66868ab39e2e374026c772f1ea3e4cac1313e9bf7c8976a9ed033fed45e79';
+const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9:%._~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_.~#?&//=]*)/;
 
 module.exports = {
-  NotFound, CastError, Error400, Error404, Error500,
+  NotFound, CastError, JWT_SECRET, regex,
 };

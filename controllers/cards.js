@@ -1,51 +1,60 @@
+/* eslint-disable no-console */
 const mongoose = require('mongoose');
 const Card = require('../models/card');
 const {
-  NotFound, CastError, Error400, Error404, Error500,
+  NotFound, CastError,
 } = require('../constants/constants');
+const BadRequestError = require('../errors/BadRequestError');
+const NotFoundError = require('../errors/NotFoundError');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => {
-      res.status(Error500).send({ message: 'Произошла неизвестная ошибка' });
-    });
+    // eslint-disable-next-line arrow-parens
+    .catch(err => next(err));
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(Error400).send({ message: 'Некорректные данные' });
-        return;
+        return next(new BadRequestError('Некорректные данные'));
       }
 
-      res.status(Error500).send({ message: 'Произошла неизвестная ошибка' });
+      return next(err);
     });
 };
 
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId).orFail(new Error(NotFound))
-    .then((card) => res.send({ data: card }))
+module.exports.deleteCard = (req, res, next) => {
+  Card.findById(req.params.cardId).orFail(new Error(NotFound))
+    .then((card) => {
+      if (card.owner._id !== req.user._id) {
+        res.send({ message: 'Функция недоступна' });
+      } else {
+        Card.findByIdAndRemove(req.params.cardId).orFail(new Error(NotFound))
+          // eslint-disable-next-line no-shadow
+          .then((card) => {
+            res.send({ data: card });
+          });
+      }
+    })
     .catch((err) => {
       if (err.name === CastError) {
-        res.status(Error400).send({ message: 'Некорректные данные' });
-        return;
+        return next(new BadRequestError('Некорректные данные'));
       }
 
       if (err.message === NotFound) {
-        res.status(Error404).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
+        return next(new NotFoundError('Запрашиваемая карточка не найдена'));
       }
 
-      res.status(Error500).send({ message: 'Произошла неизвестная ошибка' });
+      return next(err);
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -54,20 +63,18 @@ module.exports.likeCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === CastError) {
-        res.status(Error400).send({ message: 'Некорректные данные' });
-        return;
+        return next(new BadRequestError('Некорректные данные'));
       }
 
       if (err.message === NotFound) {
-        res.status(Error404).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
+        return next(new NotFoundError('Запрашиваемая карточка не найдена'));
       }
 
-      res.status(Error500).send({ message: 'Произошла неизвестная ошибка' });
+      return next(err);
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -76,15 +83,13 @@ module.exports.dislikeCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === CastError) {
-        res.status(Error400).send({ message: 'Некорректные данные' });
-        return;
+        return next(new BadRequestError('Некорректные данные'));
       }
 
       if (err.message === NotFound) {
-        res.status(Error404).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
+        return next(new NotFoundError('Запрашиваемая карточка не найдена'));
       }
 
-      res.status(Error500).send({ message: 'Произошла неизвестная ошибка' });
+      return next(err);
     });
 };
