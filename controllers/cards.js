@@ -32,15 +32,16 @@ module.exports.createCard = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId).orFail(new Error(NotFound))
     .then((card) => {
-      if (card.owner._id !== req.user._id) {
+      if (card.owner.toString() !== req.user._id) {
+        // return next(new ForbiddenError('Функция недоступна'));
         throw new ForbiddenError('Функция недоступна');
-      } else {
-        Card.findByIdAndRemove(req.params.cardId).orFail(new Error(NotFound))
-          // eslint-disable-next-line no-shadow
-          .then((card) => {
-            res.send({ data: card });
-          });
+        // res.send({ message: 'Функция недоступна' });
       }
+      return Card.findByIdAndRemove(req.params.cardId).orFail(new Error(NotFound))
+        // eslint-disable-next-line no-shadow
+        .then((card) => {
+          res.send({ data: card });
+        });
     })
     .catch((err) => {
       if (err.name === CastError) {
