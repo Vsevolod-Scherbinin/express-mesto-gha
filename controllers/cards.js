@@ -6,6 +6,7 @@ const {
 } = require('../constants/constants');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -32,7 +33,7 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId).orFail(new Error(NotFound))
     .then((card) => {
       if (card.owner._id !== req.user._id) {
-        res.send({ message: 'Функция недоступна' });
+        throw new ForbiddenError('Функция недоступна');
       } else {
         Card.findByIdAndRemove(req.params.cardId).orFail(new Error(NotFound))
           // eslint-disable-next-line no-shadow
