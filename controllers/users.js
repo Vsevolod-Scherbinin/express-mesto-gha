@@ -73,15 +73,11 @@ module.exports.editUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true,
     runValidators: true,
-  }).orFail(new Error(NotFound))
+  }).orFail(() => new NotFoundError('Запрашиваемый пользователь не найден'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return next(new BadRequestError('Некорректные данные'));
-      }
-
-      if (err.message === NotFound) {
-        return next(new NotFoundError('Запрашиваемый пользователь не найден'));
       }
 
       return next(err);
@@ -94,15 +90,11 @@ module.exports.editAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, {
     new: true,
     runValidators: true,
-  }).orFail(new Error(NotFound))
+  }).orFail(() => new NotFoundError('Запрашиваемый пользователь не найден'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return next(new BadRequestError('Некорректные данные'));
-      }
-
-      if (err.message === NotFound) {
-        return next(new NotFoundError('Запрашиваемый пользователь не найден'));
       }
 
       return next(err);
@@ -127,4 +119,8 @@ module.exports.login = (req, res, next) => {
     .catch((err) => {
       return next(new UnauthorizedError('Ошибка авторизации'));
     });
+};
+
+module.exports.clearCookie = (req, res) => {
+  res.clearCookie('jwt').send({ message: 'Вы вышли из аккаунта' });
 };

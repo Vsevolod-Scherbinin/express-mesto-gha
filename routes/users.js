@@ -8,10 +8,11 @@ const {
 
 // eslint-disable-next-line max-len
 // Важна последовательность. :userId должен быть после get-запроса по users/me. Альтернатива - отдельный контроллер на users/me
-router.get('/users', auth, getUsers);
-router.get('/users/me', auth, getUserById);
-router.patch('/users/me', userDataValidation, auth, editUser);
-router.patch('/users/me/avatar', userAvatarValidation, auth, editAvatar);
-router.get('/users/:userId', userIdValidation, auth, getUserById);
+router.use(auth);
+router.get('/users', getUsers);
+router.get('/users/me', getUserById);
+router.patch('/users/me', userDataValidation, editUser);
+router.patch('/users/me/avatar', userAvatarValidation, editAvatar);
+router.get('/users/:userId', userIdValidation, getUserById);
 
 module.exports = router;

@@ -3,8 +3,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
-const { authValidation } = require('./middlewares/requestsValidation');
-
+const { signInValidation, signUpValidation } = require('./middlewares/requestsValidation');
+const { clearCookie } = require('./controllers/users');
+const NotFoundError = require('./errors/NotFoundError');
 const centralErrorHandler = require('./middlewares/centralErrorHandler');
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
@@ -22,13 +23,14 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+app.post('/signup', signUpValidation, createUser);
+app.post('/signin', signInValidation, login);
+app.get('/signout', clearCookie);
+
 app.use(routesUsers);
 app.use(routesCards);
 
-app.post('/signup', authValidation, createUser);
-app.post('/signin', authValidation, login);
-
-app.use((req, res) => res.status(404).send({ message: 'Некорректный путь запроса' }));
+app.use((req, res, next) => next(new NotFoundError('Некорректный адрес запроса')));
 
 app.use(errors());
 app.use(centralErrorHandler);

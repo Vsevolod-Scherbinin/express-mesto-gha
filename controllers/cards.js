@@ -11,8 +11,7 @@ const ForbiddenError = require('../errors/ForbiddenError');
 module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    // eslint-disable-next-line arrow-parens
-    .catch(err => next(err));
+    .catch((err) => next(err));
 };
 
 module.exports.createCard = (req, res, next) => {
@@ -30,7 +29,7 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findById(req.params.cardId).orFail(new Error(NotFound))
+  Card.findById(req.params.cardId).orFail(() => new NotFoundError('Запрашиваемая карточка не найдена'))
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
         // return next(new ForbiddenError('Функция недоступна'));
@@ -46,10 +45,6 @@ module.exports.deleteCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === CastError) {
         return next(new BadRequestError('Некорректные данные'));
-      }
-
-      if (err.message === NotFound) {
-        return next(new NotFoundError('Запрашиваемая карточка не найдена'));
       }
 
       return next(err);
