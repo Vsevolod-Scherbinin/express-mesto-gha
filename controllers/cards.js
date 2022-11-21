@@ -10,7 +10,8 @@ const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
+    // .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.send(cards))
     .catch((err) => next(err));
 };
 
@@ -18,7 +19,8 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.send({ data: card }))
+    // .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return next(new BadRequestError('Некорректные данные'));
@@ -39,7 +41,8 @@ module.exports.deleteCard = (req, res, next) => {
       return Card.findByIdAndRemove(req.params.cardId).orFail(new Error(NotFound))
         // eslint-disable-next-line no-shadow
         .then((card) => {
-          res.send({ data: card });
+          // res.send({ data: card });
+          res.send(card);
         });
     })
     .catch((err) => {
@@ -57,7 +60,8 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   ).orFail(new Error(NotFound))
-    .then((card) => res.send({ data: card }))
+    // .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === CastError) {
         return next(new BadRequestError('Некорректные данные'));
@@ -77,7 +81,8 @@ module.exports.dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   ).orFail(new Error(NotFound))
-    .then((card) => res.send({ data: card }))
+    // .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === CastError) {
         return next(new BadRequestError('Некорректные данные'));
