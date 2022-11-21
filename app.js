@@ -7,7 +7,7 @@ const { clearCookie } = require('./controllers/users');
 const NotFoundError = require('./errors/NotFoundError');
 const centralErrorHandler = require('./middlewares/centralErrorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-// const cors = require('./middlewares/cors');
+const cors = require('./middlewares/cors');
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
@@ -21,41 +21,41 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
-// app.use(cors);
-
 app.use(express.json());
 app.use(cookieParser());
 
 app.use(requestLogger);
 
-const allowedCors = [
-  'https://scherbinin.mesto.nomoredomains.club',
-  'http://scherbinin.mesto.nomoredomains.club',
-  'https://api.scherbinin.mesto.nomoredomains.club',
-  'http://api.scherbinin.mesto.nomoredomains.club',
-  'localhost:3000',
-];
+app.use(cors);
 
-app.use((req, res, next) => {
-  const { origin } = req.headers;
+// const allowedCors = [
+//   'https://scherbinin.mesto.nomoredomains.club',
+//   'http://scherbinin.mesto.nomoredomains.club',
+//   'https://api.scherbinin.mesto.nomoredomains.club',
+//   'http://api.scherbinin.mesto.nomoredomains.club',
+//   'localhost:3000',
+// ];
 
-  if (allowedCors.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
+// app.use((req, res, next) => {
+//   const { origin } = req.headers;
 
-  const { method } = req;
+//   if (allowedCors.includes(origin)) {
+//     res.header('Access-Control-Allow-Origin', origin);
+//   }
 
-  const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
-  const requestHeaders = req.headers['access-control-request-headers'];
+//   const { method } = req;
 
-  if (method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
-    res.header('Access-Control-Allow-Headers', requestHeaders);
-    return res.end();
-  }
+//   const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
+//   const requestHeaders = req.headers['access-control-request-headers'];
 
-  return next();
-});
+//   if (method === 'OPTIONS') {
+//     res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
+//     res.header('Access-Control-Allow-Headers', requestHeaders);
+//     return res.end();
+//   }
+
+//   return next();
+// });
 
 app.post('/signup', signUpValidation, createUser);
 app.post('/signin', signInValidation, login);
