@@ -1,9 +1,6 @@
 const router = require('express').Router();
 const auth = require('../middlewares/auth');
 const { cardValidation, cardIdValidation } = require('../middlewares/requestsValidation');
-// const cors = require('../middlewares/cors');
-
-// router.use(cors);
 
 const {
   getCards, createCard, deleteCard, likeCard, dislikeCard,
