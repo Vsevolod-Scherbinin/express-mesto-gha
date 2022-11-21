@@ -6,6 +6,7 @@ const { signInValidation, signUpValidation } = require('./middlewares/requestsVa
 const { clearCookie } = require('./controllers/users');
 const NotFoundError = require('./errors/NotFoundError');
 const centralErrorHandler = require('./middlewares/centralErrorHandler');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 // const cors = require('./middlewares/cors');
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
@@ -28,6 +29,8 @@ app.use(cookieParser());
 const allowedCors = [
   'https://scherbinin.mesto.nomoredomains.club',
   'http://scherbinin.mesto.nomoredomains.club',
+  'https://api.scherbinin.mesto.nomoredomains.club',
+  'http://api.scherbinin.mesto.nomoredomains.club',
   'localhost:3000',
 ];
 
@@ -52,6 +55,8 @@ app.use((req, res, next) => {
   return next();
 });
 
+app.use(requestLogger);
+
 app.post('/signup', signUpValidation, createUser);
 app.post('/signin', signInValidation, login);
 app.get('/signout', clearCookie);
@@ -61,6 +66,7 @@ app.use(routesCards);
 
 app.use((req, res, next) => next(new NotFoundError('Некорректный адрес запроса')));
 
+app.use(errorLogger);
 app.use(errors());
 app.use(centralErrorHandler);
 
