@@ -108,15 +108,13 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwtoken.sign(
-        { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-      );
+      const token = jwtoken.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
 
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
-        sameSite: true,
+        sameSite: 'None',
+        secure: true,
       })
         .status(200).send({ message: 'Авторзация прошла успешно' });
     })
@@ -127,5 +125,6 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.clearCookie = (req, res) => {
-  res.clearCookie('jwt').send({ message: 'Вы вышли из аккаунта' });
+  res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true })
+    .send({ message: 'Вы вышли из аккаунта' });
 };
