@@ -51,12 +51,12 @@ module.exports.createUser = (req, res, next) => {
       password: hash,
     }))
     .then((user) => res.send({
-      // data: {
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-      email: user.email,
-      // },
+      data: {
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      },
     }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
