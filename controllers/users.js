@@ -110,6 +110,9 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwtoken.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
 
+      // eslint-disable-next-line no-console
+      console.log(NODE_ENV === 'production');
+
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
