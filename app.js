@@ -6,6 +6,7 @@ const { signInValidation, signUpValidation } = require('./middlewares/requestsVa
 const { clearCookie } = require('./controllers/users');
 const NotFoundError = require('./errors/NotFoundError');
 const centralErrorHandler = require('./middlewares/centralErrorHandler');
+const cors = require('./middlewares/cors');
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
@@ -21,6 +22,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
 
 app.post('/signup', signUpValidation, createUser);
 app.post('/signin', signInValidation, login);
