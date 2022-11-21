@@ -96,7 +96,7 @@ module.exports.editAvatar = (req, res, next) => {
     new: true,
     runValidators: true,
   }).orFail(() => new NotFoundError('Запрашиваемый пользователь не найден'))
-    // .then((user) => res.send({ data: user }))
+    // .then((user) => res.send({ data: user })) fixed
     .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
