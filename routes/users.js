@@ -1,6 +1,9 @@
 const router = require('express').Router();
 const auth = require('../middlewares/auth');
 const { userIdValidation, userDataValidation, userAvatarValidation } = require('../middlewares/requestsValidation');
+const cors = require('../middlewares/cors');
+
+router.use(cors());
 
 const {
   getUsers, getUserById, editUser, editAvatar,
