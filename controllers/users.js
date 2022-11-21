@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwtoken = require('jsonwebtoken');
 const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
-// const UnauthorizedError = require('../errors/UnauthorizedError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 const ConflictError = require('../errors/ConflictError');
 const NotFoundError = require('../errors/NotFoundError');
 
@@ -119,10 +119,9 @@ module.exports.login = (req, res, next) => {
         .status(200).send({ message: 'Авторзация прошла успешно' });
     })
     // eslint-disable-next-line arrow-body-style, no-unused-vars
-    // .catch((err) => {
-    //   return next(new UnauthorizedError('Ошибка авторизации'));
-    // });
-    .catch(next);
+    .catch((err) => {
+      return next(new UnauthorizedError('Ошибка авторизации'));
+    });
 };
 
 module.exports.clearCookie = (req, res) => {
