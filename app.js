@@ -26,6 +26,8 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+app.use(requestLogger);
+
 const allowedCors = [
   'https://scherbinin.mesto.nomoredomains.club',
   'http://scherbinin.mesto.nomoredomains.club',
@@ -54,8 +56,6 @@ app.use((req, res, next) => {
 
   return next();
 });
-
-app.use(requestLogger);
 
 app.post('/signup', signUpValidation, createUser);
 app.post('/signin', signInValidation, login);
