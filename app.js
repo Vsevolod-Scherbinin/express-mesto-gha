@@ -31,6 +31,8 @@ app.use(requestLogger);
 const allowedCors = [
   'https://scherbinin.mesto.nomoredomains.club',
   'http://scherbinin.mesto.nomoredomains.club',
+  'https://api.scherbinin.mesto.nomoredomains.club',
+  'http://api.scherbinin.mesto.nomoredomains.club',
   'localhost:3000',
 ];
 
