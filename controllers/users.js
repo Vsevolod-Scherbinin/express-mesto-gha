@@ -15,7 +15,7 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    // .then((users) => res.send({ data: users }))
+    // .then((users) => res.send({ data: users })) fixed
     .then((users) => res.send(users))
     // eslint-disable-next-line no-undef, arrow-parens
     .catch(err => next(err));
@@ -24,7 +24,7 @@ module.exports.getUsers = (req, res, next) => {
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId || req.user._id).orFail(new Error(NotFound))
     .then((user) => res.send({ data: user }))
-    // .then((user) => res.send(user))
+    // .then((user) => res.send(user)) fixed
     .catch((err) => {
       if (err.name === CastError) {
         return next(new BadRequestError('Некорректные данные'));
@@ -78,8 +78,8 @@ module.exports.editUser = (req, res, next) => {
     new: true,
     runValidators: true,
   }).orFail(() => new NotFoundError('Запрашиваемый пользователь не найден'))
-    .then((user) => res.send({ data: user }))
-    // .then((user) => res.send(user))
+    // .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return next(new BadRequestError('Некорректные данные'));
