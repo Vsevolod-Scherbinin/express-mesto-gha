@@ -1,17 +1,22 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-require('dotenv').config();
 const { errors } = require('celebrate');
-const NotFoundError = require('./errors/NotFoundError');
-const { createUser, login } = require('./controllers/users');
 const { signInValidation, signUpValidation } = require('./middlewares/requestsValidation');
+const { clearCookie } = require('./controllers/users');
+const NotFoundError = require('./errors/NotFoundError');
 const centralErrorHandler = require('./middlewares/centralErrorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cors = require('./middlewares/cors');
-const auth = require('./middlewares/auth');
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
+
+const routesUsers = require('./routes/users');
+const routesCards = require('./routes/cards');
+const {
+  createUser, login,
+} = require('./controllers/users');
 
 const { PORT = 3000 } = process.env;
 
@@ -26,9 +31,10 @@ app.use(cors);
 
 app.post('/signup', signUpValidation, createUser);
 app.post('/signin', signInValidation, login);
-app.use(auth);
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
+app.get('/signout', clearCookie);
+
+app.use(routesUsers);
+app.use(routesCards);
 
 app.use((req, res, next) => next(new NotFoundError('Некорректный адрес запроса')));
 

@@ -1,26 +1,18 @@
 const router = require('express').Router();
-const {
-  userIdValidation,
-  userDataValidation,
-  userAvatarValidation,
-} = require('../middlewares/requestsValidation');
+const auth = require('../middlewares/auth');
+const { userIdValidation, userDataValidation, userAvatarValidation } = require('../middlewares/requestsValidation');
 
 const {
-  getUsers,
-  getUserById,
-  editUser,
-  editAvatar,
-  clearCookie,
+  getUsers, getUserById, editUser, editAvatar,
 } = require('../controllers/users');
 
 // eslint-disable-next-line max-len
 // Важна последовательность. :userId должен быть после get-запроса по users/me. Альтернатива - отдельный контроллер на users/me
-
-router.get('/', getUsers);
-router.get('/me', getUserById);
-router.delete('/signout', clearCookie);
-router.patch('/me', userDataValidation, editUser);
-router.patch('/me/avatar', userAvatarValidation, editAvatar);
-router.get('/:userId', userIdValidation, getUserById);
+router.use(auth);
+router.get('/users', getUsers);
+router.get('/users/me', getUserById);
+router.patch('/users/me', userDataValidation, editUser);
+router.patch('/users/me/avatar', userAvatarValidation, editAvatar);
+router.get('/users/:userId', userIdValidation, getUserById);
 
 module.exports = router;
