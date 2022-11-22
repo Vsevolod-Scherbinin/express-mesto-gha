@@ -3,7 +3,7 @@ const auth = require('../middlewares/auth');
 const { userIdValidation, userDataValidation, userAvatarValidation } = require('../middlewares/requestsValidation');
 
 const {
-  getUsers, getUserById, editUser, editAvatar, logout,
+  getUsers, getUserById, editUser, editAvatar,
 } = require('../controllers/users');
 
 // eslint-disable-next-line max-len
@@ -11,7 +11,6 @@ const {
 router.use(auth);
 router.get('/users', getUsers);
 router.get('/users/me', getUserById);
-router.delete('users/signout', logout);
 router.patch('/users/me', userDataValidation, editUser);
 router.patch('/users/me/avatar', userAvatarValidation, editAvatar);
 router.get('/users/:userId', userIdValidation, getUserById);

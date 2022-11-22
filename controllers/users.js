@@ -128,7 +128,7 @@ module.exports.login = (req, res, next) => {
     });
 };
 
-module.exports.logout = (req, res) => {
+module.exports.clearCookie = (req, res) => {
   res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true })
     .send({ message: 'Вы вышли из аккаунта' });
 };
